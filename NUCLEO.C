@@ -1,12 +1,4 @@
 #include<NUCLEO.H>
-/*typedef struct desc_p{
-    char nome[35];
-    enum {ativo, bloqueado, terminado} estado;
-    PTR_DESC contexto;
-    struct desc_p *prox_bcp;
-} BCP_PROC;
-
-typedef BCP_PROC* PTR_BCP_PROC;*/
 
 PTR_BCP_PROC prim = NULL;
 PTR_DESC d_esc;
