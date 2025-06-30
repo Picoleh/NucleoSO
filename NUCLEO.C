@@ -20,7 +20,6 @@ void far iniciaSemaforo(semaforo *sem, int v){
 void far Down(semaforo *sem){
     PTR_BCP_PROC aux = prim;
     disable();
-    system("pause");
     if(sem->s == 0){
         insereFimFilaSemaforo(sem, prim);
         prim->estado = bloqueado;
@@ -132,7 +131,6 @@ void far escalador(){
         iotransfer();
         disable();
         if(!*rcDOS.y){
-            printf("\nprocesso %s rodou\n", prim->nome);
             if(procuraProximoAtivo())
                 p_est->p_destino = prim->contexto;
             else
@@ -145,9 +143,6 @@ void far escalador(){
 void far disparaSistema(){
     PTR_DESC d_dispara;
 
-    mostraFilaBCP();
-    system("pause");
-
     d_esc = cria_desc();
     d_dispara = cria_desc();
 
@@ -158,17 +153,13 @@ void far disparaSistema(){
 void far terminaProcesso(){
     disable();
     prim->estado = terminado;
-    printf("%s terminou\n", prim->nome);
     enable();
     while(1);
 }
 
 void far voltaDOS(){
     disable();
-    printf("Voltando ao DOS\n");
-    mostraFilaBCP();
     setvect(8, p_est->int_anterior);
-    system("pause");
     enable();
     exit(0);
 }

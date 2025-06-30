@@ -19,12 +19,12 @@ void far tic(){
 }
 
 void far escalador(){
-  int c = 5;
   int flag = 0;
   PTR_DESC dAtual;
+  p_est->p_origem = dEscalador;
   p_est->num_vetor = 8;
 
-  while(c > 0){
+  while(1){
     if(flag)
       dAtual = dTac;
     else
@@ -32,16 +32,9 @@ void far escalador(){
 
     flag = !flag;
 
-    p_est->p_origem = dEscalador;
     p_est->p_destino = dAtual;
 
     iotransfer();
-    c -= 1;
-  }
-
-  printf("\nFim\n");
-  while(1){
-   transfer(dEscalador, dMain);
   }
 }
 
@@ -58,6 +51,5 @@ int main(){
 
   system("pause");
   transfer(dMain, dEscalador);
-  system("pause");
   return 0;
 }
