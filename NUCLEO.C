@@ -4,11 +4,15 @@ PTR_BCP_PROC prim = NULL;
 PTR_DESC d_esc;
 APONTA_REG_CRIT rcDOS;
 
+/* Coloca os valores iniciais no semaforo */
 void far iniciaSemaforo(semaforo *sem, int v){
     sem->s = v;
     sem->Q = NULL;
 }
 
+/* Se o contador do semaforo é zero, bloqueia o processo corrente e o adiciona na lista de bloqueados.
+    Caso contrario decrementa contador
+*/
 void far Down(semaforo *sem){
     PTR_BCP_PROC aux = prim;
     disable();
@@ -27,6 +31,7 @@ void far Down(semaforo *sem){
     }
 }
 
+/* Desbloqueia o primeiro processo da lista, caso houver. Se não incrementa o contador */
 void far Up(semaforo *sem){
     disable();
     if(sem->Q != NULL){
@@ -38,6 +43,7 @@ void far Up(semaforo *sem){
     enable();
 }
 
+/* Realiza uma insercao em uma lista encadeada simples */
 void insereFimFilaSemaforo(semaforo *sem, PTR_BCP_PROC bcp){
     if(sem->Q == NULL)
         sem->Q = bcp;
@@ -49,6 +55,7 @@ void insereFimFilaSemaforo(semaforo *sem, PTR_BCP_PROC bcp){
     }
 }
 
+/* Realiza uma insercao em uma lista encadeada circular */
 void insereFimFilaBCP(PTR_BCP_PROC bcp){
     if(prim == NULL)
         prim = bcp;
@@ -61,6 +68,7 @@ void insereFimFilaBCP(PTR_BCP_PROC bcp){
     bcp->prox_bcp = prim;
 }
 
+/* Percorre a lista de BCP's, exibindo os nomes e estados dos processos */
 void mostraFilaBCP(){
     PTR_BCP_PROC aux = prim;
     printf("FILA: \n");
@@ -71,6 +79,7 @@ void mostraFilaBCP(){
     printf("%s (%d) -> l\n", aux->nome, aux->estado);
 }
 
+/* Aloca memoria para um novo BCP e insere valores inicias */
 void far criaProcesso(char* nome_p, void far(*end_proc)()){
     PTR_BCP_PROC bcp = (PTR_BCP_PROC) malloc(sizeof(BCP_PROC));
 
@@ -92,6 +101,9 @@ void far criaProcesso(char* nome_p, void far(*end_proc)()){
     insereFimFilaBCP(bcp);
 }
 
+/* Percorre a lista de BCP's a procura de um processo ativo, retornando true ou false e 
+   caso verdadeiro, altera o ponteiro prim do escalador 
+*/
 int procuraProximoAtivo(){
     PTR_BCP_PROC aux = prim->prox_bcp;
     while(aux != prim){
@@ -108,6 +120,7 @@ int procuraProximoAtivo(){
         return 0;
 }
 
+/* Implementa a logica do escalador, escolhendo o fluxo de execução e tratando interrupções em areas criticas do DOS */
 void far escalador(){
     p_est->p_origem = d_esc;
     p_est->p_destino = prim->contexto;
@@ -132,6 +145,7 @@ void far escalador(){
     }
 }
 
+/* Chama a corotina do escalador */
 void far disparaSistema(){
     PTR_DESC d_dispara;
 
@@ -142,6 +156,7 @@ void far disparaSistema(){
     transfer(d_dispara, d_esc);
 }
 
+/* Muda o estado do processo para terminado */
 void far terminaProcesso(){
     disable();
     prim->estado = terminado;
@@ -149,6 +164,7 @@ void far terminaProcesso(){
     while(1);
 }
 
+/* Recupera o endereco da rotina de interrupção padrão do DOS, efetivamente saindo de execução */
 void far voltaDOS(){
     disable();
     setvect(8, p_est->int_anterior);

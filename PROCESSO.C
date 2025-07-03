@@ -8,10 +8,12 @@ semaforo mutex, vazia, cheia;
 int inicio, fim, vetor[N];
 FILE *arq;
 
+/* função produtora, onde é retornado um numero ímpar a partir do valor de entrada seed */
 int produzir(int seed){
     return 2 * seed + 1;
 }
 
+/* Produz IT produtos e deposita no buffer, quando disponivel */
 void far produtor(){
     int i=0;
     while(i < IT){
@@ -28,6 +30,7 @@ void far produtor(){
     terminaProcesso();
 }
 
+/* Consome IT produtos do buffer, quando disponivel*/
 void far consumidor(){
     int i=0;
     while(i < IT){
